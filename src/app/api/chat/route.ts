@@ -39,13 +39,44 @@ export async function POST(req: Request) {
     );
   }
 
-  const coreMessages = convertToCoreMessages(messages);
-
-  const result = await streamText({
-    model: openai(process.env.OPENAI_MODEL ?? "gpt-4o-mini"),
-    messages: coreMessages,
+  console.log("[chat] received request", {
+    count: messages.length,
+    lastRole: messages.at(-1)?.role,
   });
 
-  return result.toTextStreamResponse();
+  try {
+    const coreMessages = convertToCoreMessages(messages);
+
+    console.log("[chat] sending to provider", {
+      model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
+      userPromptPreview: coreMessages.at(-1)?.role === "user"
+        ? coreMessages.at(-1)?.content?.slice?.(0, 100)
+        : undefined,
+    });
+
+    const result = await streamText({
+      model: openai(process.env.OPENAI_MODEL ?? "gpt-4o-mini"),
+      messages: coreMessages,
+    });
+
+    console.log("[chat] streaming response ready");
+
+    return result.toUIMessageStreamResponse({
+      originalMessages: messages,
+    });
+  } catch (error) {
+    console.error("[chat] failed to stream response", error);
+
+    return new Response(
+      JSON.stringify({
+        error:
+          "Failed to generate a response. Check server logs for more information.",
+      }),
+      {
+        status: 500,
+        headers: { "content-type": "application/json" },
+      }
+    );
+  }
 }
 
