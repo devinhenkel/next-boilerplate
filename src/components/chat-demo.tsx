@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
 type MessagePart = UIMessage["parts"][number];
@@ -117,9 +118,12 @@ export function ChatDemo() {
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8">
       <header className="flex flex-col gap-2 text-center sm:text-left">
-        <Badge variant="outline" className="mx-auto w-fit sm:mx-0">
-          Next.js AI Chatbot
-        </Badge>
+        <div className="flex items-center justify-between">
+          <Badge variant="outline" className="w-fit sm:mx-0">
+            Next.js AI Chatbot
+          </Badge>
+          <ThemeToggle />
+        </div>
         <h1 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
           Chat with your boilerplate
         </h1>
